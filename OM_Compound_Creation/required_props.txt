@@ -1,0 +1,15 @@
+LiqCpId ( specific heat of liq at a tem ) - LiqCp
+VapCpId ( specific heat of vap at a tem ) - VapCp
+HLiqId ( enthalpy of ideal liq ) - SH ( heat of formation )
+				   VapCp
+				   HOV
+				   Tc
+HVapId ( enthalpy of ideal vap ) - SH
+				   VapCp
+				   HOV
+				   Tc
+HV ( heat of vaporization ) - HOV	
+			      Tc
+SId ( entropy of liq/vap ?? ) - HOV
+      				Tb
+      				Tc
