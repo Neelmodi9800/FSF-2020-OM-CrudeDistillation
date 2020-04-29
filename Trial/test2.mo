@@ -1,5 +1,3 @@
-within Trial;
-
 model test2
 
 extends test1;

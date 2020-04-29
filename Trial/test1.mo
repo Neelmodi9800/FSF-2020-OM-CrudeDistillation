@@ -1,4 +1,3 @@
-within Trial;
 
 model test1
 
