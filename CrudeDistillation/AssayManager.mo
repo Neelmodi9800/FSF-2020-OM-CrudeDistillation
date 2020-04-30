@@ -2,7 +2,7 @@ within CrudeDistillation;
 
 model AssayManager
 
-extends input_values;
+extends input_values( MW = 85, SG = 0.85, Tb = 400, n = 10);
 
 Real MWA, MWa, MWb, MWB, MWavg;     // variables for MW
 Real _MWsi[lim], MWx[lim], MWq[n + 1], MWsi[n + 1 ], MWz[n], MWasi[n], MWai[n] ;
@@ -13,9 +13,10 @@ Real _SGsi[lim+1], SGx[lim+1], SGq[n + 1], SGz[n], SGasi[n], SGai[n], SGsi[n+1] 
 parameter Real SG0 = 0.7 ;
 Integer SGi[n+1] ;
 
-Real TbA, Tba, Tbb, TbB, Tbavg;     // variables for Tb
-Real _Tbsi[lim], Tbx[lim], Tbq[n + 1], Tbsi[n + 1 ], Tbz[n], Tbasi[n], Tbai[n] ;
+Real TbA, TbB, Tbavg;     // variables for Tb
+Real Tbx[lim+1], _Tbsi[lim+1], Tbsi[n+1], Tbq[n + 1], Tbz[n], Tbasi[n], Tbai[n] ;
 parameter Real Tb0 = 333 ;
+Integer Tbi[n+1] ;
 
 Real Pc[n], d15[n], Tc[n], AF[n] ; // varialbe for critical property calculation
 
@@ -83,36 +84,33 @@ for i in 1:n loop
 
 end for; //equations for SG ends
 
+
 Tbavg = ( Tb - Tb0 ) / Tb0 ; // equation starts for Tb calculation 
 
 TbB = 1.5 ; 
 
 TbA = (Tbavg/0.689) ^ TbB;
 
-for i in 1:lim loop
+for i in 0:lim loop
 
-  Tbx[i] = i/( lim + 1) ;
-  _Tbsi[i] = (TbA/TbB)^1/TbB * log ( 1 / (1 - (i)/( lim + 1)) ) ^ (1/TbB) ;
+  Tbx[i+1] = i/lim ;
+  _Tbsi[i+1] = (TbA/TbB * log ( 1 / (1 - (i-(i-0.001)/lim)/(lim)) ) ) ^ (1/TbB) ;
   
 end for ;  
 
+for i in 0:n loop
 
-Tba = 1/n * ( Tbx[lim] - Tbx[1] ); // converting x as a linear function of i in 1:n
-Tbb = Tbx[1] - Tba;
-
-for i in 1:( n + 1) loop
-
-  Tbsi[i] = (TbA/TbB * log ( 1/ ( 1 - Tba*i - Tbb ) )) ^ (1/TbB) ;
-  Tbq[i] = TbB/TbA * (( TbA/TbB * log ( 1/ ( 1 - Tba*i - Tbb ) )) ^ (1/TbB) ) ^ TbB;
+  (Tbsi[i+1], Tbi[i+1]) = Modelica.Math.Vectors.interpolate(Tbx,_Tbsi,i/(n)) ;
+  Tbq[i+1] = TbB/TbA * Tbsi[i+1] ^ TbB;
 
 end for;
 
 for i in 1:n loop
   
-  Tbz[i] = exp( -TbB/TbA * Tbsi[i] ^ TbB ) - exp( -TbB/TbA * Tbsi[i+1] ^ TbB ) ;
-  Tbasi[i] = 1/Tbz[i] * (TbA/TbB) ^ (1/TbB) *( Gamma.PartialGamma( 1 + 1/TbB , Tbq[i] ) - Gamma.PartialGamma( 1+1/TbB, Tbq[i+1])) ;
+  Tbz[i] = exp( -TbB/TbA * _Tbsi[integer((i)*(lim)/(n+1))] ^ TbB ) - exp( -TbB/TbA * _Tbsi[integer((i+1)*(lim)/(n+1))] ^ TbB ) ;
+  Tbasi[i] = 1/Tbz[i] * (TbA/TbB) ^ (1/TbB) *( Gamma.PartialGamma( 1 + 1/TbB , Tbq[i] ) - Gamma.PartialGamma( 1+1/TbB, Tbq[i+1])) ; 
   Tbai[i] = Tb0 * ( 1 + Tbasi[i] ) ;
-  
+
 end for; //equations for Tb ends
 
 for i in 1:n loop // calcualtion for critical properties
