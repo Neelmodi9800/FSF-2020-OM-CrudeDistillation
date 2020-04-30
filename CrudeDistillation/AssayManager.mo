@@ -8,9 +8,10 @@ Real MWA, MWa, MWb, MWB, MWavg;     // variables for MW
 Real _MWsi[lim], MWx[lim], MWq[n + 1], MWsi[n + 1 ], MWz[n], MWasi[n], MWai[n] ;
 parameter Real MW0 = 80 ;
 
-Real SGA, SGa, SGb, SGB, SGavg;     // variables for SG
-Real _SGsi[lim], SGx[lim], SGq[n + 1], SGsi[n + 1 ], SGz[n], SGasi[n], SGai[n] ;
+Real SGA, SGB, SGavg;     // variables for SG
+Real _SGsi[lim+1], SGx[lim+1], SGq[n + 1], SGz[n], SGasi[n], SGai[n], SGsi[n+1] ;
 parameter Real SG0 = 0.7 ;
+Integer SGi[n+1] ;
 
 Real TbA, Tba, Tbb, TbB, Tbavg;     // variables for Tb
 Real _Tbsi[lim], Tbx[lim], Tbq[n + 1], Tbsi[n + 1 ], Tbz[n], Tbasi[n], Tbai[n] ;
@@ -60,27 +61,23 @@ SGB = 3 ;
 
 SGA = (SGavg/0.619) ^ SGB;
 
-for i in 1:lim loop
+for i in 0:lim loop
 
-  SGx[i] = i/( lim + 1) ;
-  _SGsi[i] = (SGA/SGB) * log ( 1 / (1 - (i)/( lim + 1)) ) ^ (1/SGB) ;
+  SGx[i+1] = i/lim ;
+  _SGsi[i+1] = (SGA/SGB * log ( 1 / (1 - (i-0.001)/lim) )) ^ (1/SGB) ;
   
 end for ;  
 
+for i in 0:n loop
 
-SGa = 1/n * ( SGx[lim] - SGx[1] ); // converting x as a linear function of i in 1:n
-SGb = SGx[1] - SGa;
-
-for i in 1:( n + 1) loop
-
-  SGsi[i] = (SGA/SGB * log ( 1/ ( 1 - SGa*i-SGb ) )) ^ (1/SGB) ;
-  SGq[i] = SGB/SGA * (( SGA/SGB * log ( 1/ ( 1 - SGa * i - SGb ) )) ^ (1/SGB) ) ^ SGB;
+  (SGsi[i+1], SGi[i+1]) = Modelica.Math.Vectors.interpolate(SGx,_SGsi,i/(n)) ;
+  SGq[i+1] = SGB/SGA * SGsi[i+1] ^ SGB;
 
 end for;
 
 for i in 1:n loop
   
-  SGz[i] = exp( -SGB/SGA * SGsi[i] ^ SGB ) - exp( -SGB/SGA * SGsi[i+1] ^ SGB ) ;
+  SGz[i] = exp( -SGB/SGA * _SGsi[integer((i)*(lim)/(n+1))] ^ SGB ) - exp( -SGB/SGA * _SGsi[integer((i+1)*(lim)/(n+1))] ^ SGB ) ;
   SGasi[i] = 1/SGz[i] * (SGA/SGB) ^ (1/SGB) *( Gamma.PartialGamma( 1 + 1/SGB , SGq[i] ) - Gamma.PartialGamma( 1+1/SGB, SGq[i+1])) ; 
   SGai[i] = SG0 * ( 1 + SGasi[i] ) ;
 
@@ -95,7 +92,7 @@ TbA = (Tbavg/0.689) ^ TbB;
 for i in 1:lim loop
 
   Tbx[i] = i/( lim + 1) ;
-  _Tbsi[i] = (TbA/TbB) * log ( 1 / (1 - (i)/( lim + 1)) ) ^ (1/TbB) ;
+  _Tbsi[i] = (TbA/TbB)^1/TbB * log ( 1 / (1 - (i)/( lim + 1)) ) ^ (1/TbB) ;
   
 end for ;  
 
