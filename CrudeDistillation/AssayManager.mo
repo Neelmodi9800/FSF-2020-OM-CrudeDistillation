@@ -22,7 +22,7 @@ Real Tbx[lim+1], _Tbsi[lim+1], Tbsi[n+1], Tbq[n + 1], Tbz[n], Tbasi[n], Tbai[n] 
 parameter Real Tb0 = 333 ;
 Integer Tbi[n+1] ;
 
-Real Pc[n], d15[n], Tc[n], AF[n], x[i] ; // varialbe for critical property calculation and mole fractions
+Real Pc[n], d15[n], Tc[n], AF[n], x[n] ; // varialbe for critical property calculation and mole fractions
 
 Integer i ;
 
