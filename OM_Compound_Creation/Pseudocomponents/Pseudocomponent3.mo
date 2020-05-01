@@ -2,7 +2,7 @@ within Pseudocomponents;
 
 model Pseudocomponent3
 
-extends GeneralProperties( SN = 1, Tc = 528.629, Pc = 3.13466E06, AF = 0.263457, MW = 80.6876, Tb = 351.771, VP = { 100, 363285, -6246, 40.7, -0.119, 1.32E-04 }, LiqCp = { 100, 2.4, -0.0139, 5.56E-05, -1.11E-07, 9.24E-11}, VapCp = { 4, 0.360, 0 , 0, 0} ) ;
+extends GeneralProperties( SN = 3, Tc = 579.551, Pc = 2.35008E06, AF = 0.379267, MW = 84.9974, Tb = 406.864, VP = { 101, 137.07,	-9700.5, -17.255, 0.000012062, 2 }, LiqCp = { 100, 2.99, -0.0165, 5.84E-05, -1.04E-07, 9.64E-11}, VapCp = { 4, 0.34235, 0 , 0, 0}, HOV = {106, 5.77E+07, 1.016576,	-1.835135, 2.12911,	-0.921819} ) ;
 
 
 end Pseudocomponent3;
