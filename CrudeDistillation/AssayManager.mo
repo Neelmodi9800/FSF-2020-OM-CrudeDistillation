@@ -38,7 +38,7 @@ for i in 1:lim loop
   
 end for ;  
 
-MWa = 1/n * ( MWx[lim] - MWx[1] ); // converting x as a linear function of i in 1:n
+MWa = 1/n * ( MWx[lim] - MWx[1] ) ; // converting x as a linear function of i in 1:n
 MWb = MWx[1] - MWa;
 
 for i in 1:( n + 1) loop
