@@ -2,7 +2,11 @@ within CrudeDistillation;
 
 model AssayManager
 
-extends input_values( MW = 85, SG = 0.85, Tb = 400, n = 10);
+parameter Real MW = 85 ;
+parameter Real Tb = 400 ;
+parameter Real SG = 0.85 ;
+parameter Integer n = 10 ;
+parameter Integer lim = 800 ;
 
 Real MWA, MWa, MWb, MWB, MWavg;     // variables for MW
 Real _MWsi[lim], MWx[lim], MWq[n + 1], MWsi[n + 1 ], MWz[n], MWasi[n], MWai[n] ;
@@ -18,7 +22,7 @@ Real Tbx[lim+1], _Tbsi[lim+1], Tbsi[n+1], Tbq[n + 1], Tbz[n], Tbasi[n], Tbai[n] 
 parameter Real Tb0 = 333 ;
 Integer Tbi[n+1] ;
 
-Real Pc[n], d15[n], Tc[n], AF[n] ; // varialbe for critical property calculation
+Real Pc[n], d15[n], Tc[n], AF[n], x[i] ; // varialbe for critical property calculation and mole fractions
 
 Integer i ;
 
@@ -38,7 +42,7 @@ for i in 1:lim loop
   
 end for ;  
 
-MWa = 1/n * ( MWx[lim] - MWx[1] ) ; // converting x as a linear function of i in 1:n
+MWa = 1/n * ( MWx[lim] - MWx[1] ); // converting x as a linear function of i in 1:n
 MWb = MWx[1] - MWa;
 
 for i in 1:( n + 1) loop
@@ -118,6 +122,7 @@ end for; //equations for Tb ends
 
 for i in 1:n loop // calcualtion for critical properties
   
+  x[i] = MWz[i] ;
   d15[i] = SGai[i] ;
   Tc[i] = CriticalProp.Tc_Riazi( Tbai[i], d15[i] ) ;
   Pc[i] = CriticalProp.Pc_RiaziDaubert( Tbai[i], d15[i] ) ;
