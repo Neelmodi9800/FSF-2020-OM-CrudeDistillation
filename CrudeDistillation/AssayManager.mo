@@ -91,10 +91,13 @@ TbB = 1.5 ;
 
 TbA = (Tbavg/0.689) ^ TbB;
 
-for i in 0:lim loop
+ Tbx[1] = 0/lim ;
+  _Tbsi[1] = (TbA/TbB * log ( 1 / (1 - (0-(0-0.001)/lim)/(lim)) ) ) ^ (1/TbB) ;
+
+for i in 1:lim loop
 
   Tbx[i+1] = i/lim ;
-  _Tbsi[i+1] = (TbA/TbB * log ( 1 / (1 - (i-(i-0.001)/lim)/(lim)) ) ) ^ (1/TbB) ;
+  _Tbsi[i+1] = (TbA/TbB * log ( 1 / (1 - (i-(i-0.001)*0.001)/(lim)) ) ) ^ (1/TbB) ;
   
 end for ;  
 
@@ -115,7 +118,7 @@ end for; //equations for Tb ends
 
 for i in 1:n loop // calcualtion for critical properties
   
-  d15[i] = CriticalProp.d15_Riazi( MWai[i] ) ;
+  d15[i] = SGai[i] ;
   Tc[i] = CriticalProp.Tc_Riazi( Tbai[i], d15[i] ) ;
   Pc[i] = CriticalProp.Pc_RiaziDaubert( Tbai[i], d15[i] ) ;
   AF[i] = CriticalProp.AcentricFactor_LeeKesler( Tc[i], Pc[i], Tbai[i] ) ;
