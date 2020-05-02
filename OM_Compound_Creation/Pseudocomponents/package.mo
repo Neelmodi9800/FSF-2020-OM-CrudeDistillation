@@ -1,3 +1,0 @@
-package Pseudocomponents
-
-end Pseudocomponents;
