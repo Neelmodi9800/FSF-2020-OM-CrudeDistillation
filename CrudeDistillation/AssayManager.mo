@@ -126,7 +126,7 @@ for i in 1:n loop // calcualtion for critical properties
   d15[i] = SGai[i] ;
   Tc[i] = CriticalProp.Tc_Riazi( Tbai[i], d15[i] ) ;
   Pc[i] = CriticalProp.Pc_RiaziDaubert( Tbai[i], d15[i] ) ;
-  AF[i] = CriticalProp.AcentricFactor_LeeKesler( Tc[i], Pc[i], Tbai[i] ) ;
+  AF[i] = CriticalProp.AcentricFactor_LeeKesler2( Tc[i], Pc[i], Tbai[i] ) ;
   
 end for;
 
