@@ -45,7 +45,7 @@ equation
 //Mole Balance
   F_p[1] = F_p[2] + F_p[3];
 //Component Mole balance
-  x_pc[1, :] .* F_p[1] = x_pc[2, :] .* F_p[2] + x_pc[3, :] .* F_p[3];
+ // x_pc[1, :] .* F_p[1] = x_pc[2, :] .* F_p[2] + x_pc[3, :] .* F_p[3];
 //phase molar fraction
   xvap = F_p[3] / F_p[1];
 //Energy Balance
@@ -67,7 +67,7 @@ equation
 //VLE region
     for i in 1:Nc loop
       x_pc[3, i] = K_c[i] * x_pc[2, i];
-    //x_pc[2, i] = x_pc[1, i] ./ (1 + xvap * (K_c[i] - 1));
+      x_pc[2, i] = x_pc[1, i] ./ (1 + xvap * (K_c[i] - 1));
     end for;
     sum(x_pc[3, :]) = 1;
 //sum y = 1
