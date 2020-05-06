@@ -8,6 +8,7 @@ model materialstream "Model representing Material Stream"
 extends CrudeSimulator.GuessModels.InitialGuess ; 
   
   import CrudeSimulator.Files.*;
+  extends Simulator.Files.Icons.MaterialStream;
   parameter Integer Nc "Number of components" annotation(
     Dialog(tab = "Stream Specifications", group = "Component Parameters"));
   parameter CrudeSimulator.Files.CrudeDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
@@ -21,6 +22,8 @@ extends CrudeSimulator.GuessModels.InitialGuess ;
   Real Cp_pc[3, Nc](each unit = "kJ/[kmol.K]") "Component molar specific heat in phase";
   Real H_p[3](each unit = "kJ/kmol",start={Hmixg,Hliqg,Hvapg}) "Phase molar enthalpy";
   Real H_pc[3, Nc](each unit = "kJ/kmol") "Component molar enthalpy in phase";
+  Real S_p[3](each unit = "kJ/[kmol.K]") "Phase molar entropy";
+  Real S_pc[3, Nc](each unit = "kJ/[kmol.K]") "Component molar entropy in phase";
   CrudeSimulator.Files.Interfaces.matConn In(Nc = Nc) annotation(
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   CrudeSimulator.Files.Interfaces.matConn Out(Nc = Nc) annotation(
@@ -33,12 +36,14 @@ equation
   In.T = T;
   In.F = F_p[1];
   In.H = H_p[1];
+  In.S = S_p[1];
   In.x_pc = x_pc;
   In.xvap = xvap;
   Out.P = P;
   Out.T = T;
   Out.F = F_p[1];
   Out.H = H_p[1];
+  Out.S = S_p[1];
   Out.x_pc = x_pc;
   Out.xvap = xvap;
 //=====================================================================================
@@ -55,21 +60,25 @@ equation
     Cp_pc[3, i] = Files.ThermodynamicFunctions.VapCpId(C[i].VapCp, T);
     H_pc[2, i] = Files.ThermodynamicFunctions.HLiqId(C[i].SH, C[i].VapCp, C[i].HOV, C[i].Tc, T);
     H_pc[3, i] = Files.ThermodynamicFunctions.HVapId(C[i].SH, C[i].VapCp, C[i].HOV, C[i].Tc, T);
+    (S_pc[2, i], S_pc[3, i]) = ThermodynamicFunctions.SId(C[i].VapCp, C[i].HOV, C[i].Tb, C[i].Tc, T, P, x_pc[2, i], x_pc[3, i]);
   end for;
   for i in 2:3 loop
     Cp_p[i] = sum(x_pc[i, :] .* Cp_pc[i, :]) + Cpres_p[i];
     H_p[i] = sum(x_pc[i, :] .* H_pc[i, :]) + Hres_p[i];
+    S_p[i] = sum(x_pc[i, :] .* S_pc[i, :]) + Sres_p[i];
   end for;
   Cp_p[1] = (1-xvap) * Cp_p[2] + xvap * Cp_p[3];
   Cp_pc[1, :] = x_pc[1, :] .* Cp_p[1];
   H_p[1] = (1-xvap) * H_p[2] + xvap * H_p[3];
   H_pc[1, :] = x_pc[1, :] .* H_p[1];
+  S_p[1] = (1-xvap) * S_p[2] + xvap * S_p[3];
+  S_pc[1, :] = x_pc[1, :] * S_p[1];
 //VLE region
     for i in 1:Nc loop
       x_pc[3, i] = K_c[i] * x_pc[2, i];
-      x_pc[2, i] = x_pc[1, i] ./ (1 + xvap * (K_c[i] - 1));
+      x_pc[2, i] = x_pc[1, i] / (1 + xvap * (K_c[i] - 1));
     end for;
-    sum(x_pc[3, :]) = 1;
+    sum(x_pc[2, :]) = 1;
 //sum y = 1
 
 annotation(
